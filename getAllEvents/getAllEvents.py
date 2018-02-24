@@ -111,14 +111,14 @@ def getAllEvents(startdate, enddate):
 	# 	print '\n'
 	newlist = []
 	for eachEvent in listOfEvents:
-		print eachEvent['EventDetails']
+		# print eachEvent['EventDetails']
 		if eachEvent['EventDetails']:
 			formattedData = {}
-			print eachEvent
+			# print eachEvent
 			formattedData['eventName'] = eachEvent['EventDetails']['Name']
 			formattedData['eventInfo'] = eachEvent['EventDescription']
 			formattedData['eventDate'] = eachEvent['EventDetails']['Date']
-			formattedData['evetnCoord'] = getSubZone(eachEvent['EventDetails']['Address'])
+			formattedData['eventCoord'] = getSubZone(eachEvent['EventDetails']['Address'])[1]
 			newlist.append(formattedData)
 	return newlist
 
@@ -131,10 +131,10 @@ def dim(a):
 def getSubZone(address):
 	
 	subzone = None
-	from os import listdir
-	from os.path import isfile, join
-	onlyfiles = [f for f in listdir('.') if isfile(join('.', f))]
-	print onlyfiles
+	# from os import listdir
+	# from os.path import isfile, join
+	# onlyfiles = [f for f in listdir('.') if isfile(join('.', f))]
+	# print onlyfiles
 
 	subzoneFile = 'getAllEvents/subzone.json'
 	#retrieve the longtitude and latitude
@@ -148,7 +148,7 @@ def getSubZone(address):
 		return
 	latlng = geocode_result[0]['geometry']['location']
 	
-	print latlng
+	# print latlng
 
 	data = json.load(open(subzoneFile))
 	for each in data['features']:
@@ -166,7 +166,7 @@ def getSubZone(address):
 			subzone = each['properties']['SUBZONE_C']
 
 	if subzone!=None:
-		return subzone
+		return subzone,(latlng['lat'], latlng['lng'])
 	else:
 		return False
 

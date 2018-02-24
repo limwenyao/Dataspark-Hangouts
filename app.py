@@ -8,15 +8,15 @@ app = Flask(__name__)
 def show_viz():
 
 	# placeholder for event title, event information, event date and event coordinates
-
+	
 	# hardcoded date for hackathon purposes
 	startDate = datetime(2018, 2, 17)
 	endDate = datetime(2018, 2, 18)
 	event = getAllEvents.getAllEvents(startDate, endDate)
-	print event
+	# print event
 
 	# placeholder for aggregated data for heatmap in json format
 
 	# placeholder for sentiment analysis
 
-	return render_template('index.html', event=None, aggregated=None, sentiment=None)
+	return render_template('index.html', event=event, aggregated=None, sentiment=None)
