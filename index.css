@@ -1,6 +1,6 @@
 #mapid {
   width: 960px;
-  height: 500px;
+  height: 800px;
 }
 svg {
   position: relative;
@@ -16,7 +16,7 @@ path:hover {
   bottom: 0;
   width: 100%;
   /* Set the fixed height of the footer here */
-  height: 60px;
+  height: 100px;
   line-height: 60px; /* Vertically center the text there */
   background-color: #f5f5f5;
 }
@@ -25,7 +25,7 @@ path:hover {
     font: 14px/16px Arial, Helvetica, sans-serif;
     background: white;
     background: rgba(255,255,255,0.8);
-    
+
     border-radius: 5px;
 }
 .legend {
