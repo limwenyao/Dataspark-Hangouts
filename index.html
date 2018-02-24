@@ -104,7 +104,7 @@
     var event_markers = L.layerGroup(markers);
 
 
-    var map = new L.Map("mapid", {center: [1.3521, 103.8198], zoom: 11.5,layers:[cities]})
+    var map = new L.Map("mapid", {center: [1.3521, 103.8198], zoom: 11.5,layers:[event_markers]})
 
     .addLayer(new L.TileLayer("http://maps-{s}.onemap.sg/v2/Original/{z}/{x}/{y}.png"));
     var regional_geojson= L.geoJSON(subzones, {
@@ -127,6 +127,7 @@
 
    };
    var baseMaps={
+     "Original": map,
      "Region": regional_geojson
    }
     L.control.layers(baseMaps, overlayMaps).addTo(map);
