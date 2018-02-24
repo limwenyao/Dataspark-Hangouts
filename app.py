@@ -8,7 +8,7 @@ app = Flask(__name__)
 @app.route('/')
 def show_viz():
 
-	# placeholder for event title, event information, event date and event coordinates
+	# TODO 1: placeholder for event title, event information, event date and event coordinates
 
 	# hardcoded date for hackathon purposes
 	startDate = datetime(2018, 2, 17)
@@ -16,22 +16,21 @@ def show_viz():
 
 	# event -> [{eventName:?, eventInfo:?, eventDate:?, eventCoord:?}, ...]
 	event = getAllEvents.getAllEvents(startDate, endDate)
-	print event
+	#print event
 
 
 
-	# placeholder for aggregated data for heatmap in json format
+	# TODO 2: placeholder for aggregated data for heatmap in json format
 
 
 
 
-	# placeholder for sentiment analysis
-	# listOfSentiment -> [([(tweet1,polarity1), (tweet2,polarity2),(tweet3,polarity3)],0.66), ....]
+	# TODO 3: placeholder for sentiment analysis
+	# data structure of sentiment -> [([(tweet1,polarity1), (tweet2,polarity2),(tweet3,polarity3)],0.66), ....]
+	# can obtain various tweets as well as the average sentiment values
 	listOfSentiment = []
 	for eachEvent in event:
-		listOfSentiment.append(Sentiment.getSentiment(eachEvent['eventName']))
-	print listOfSentiment
+		eachEvent['sentiment'] = Sentiment.getSentiment(eachEvent['eventName'])
 
 
-
-	return render_template('index.html', event=event, aggregated=None, sentiment=None)
+	return render_template('index.html', event=event, aggregated=None)
