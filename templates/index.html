@@ -119,6 +119,9 @@
 
 	var map = new L.Map("mapid", {center: [1.3521, 103.8198], zoom: 11.5,layers:[event_markers]}).addLayer(new L.TileLayer("http://maps-{s}.onemap.sg/v2/Original/{z}/{x}/{y}.png"));
 
+	var pn ={{ aggregated|tojson }};
+	var pnAll = JSON.parse(pn);
+
 	var regional_geojson= L.geoJSON(subzones, {
 		style: function(feature) {
 			switch (feature.properties.REGION_C) {
@@ -133,6 +136,29 @@
 				layer.bindPopup('<h4>'+feature.properties.SUBZONE_N[0]+feature.properties.SUBZONE_N.substring(1,feature.properties.SUBZONE_N.length).toLowerCase()+'<h4>');
 				}
 			 })
+
+			 function getColor(d,max,min) {
+		     return d > max ? '#E31A1C' :
+		            d > 1  ? '#FC4E2A' :
+		            d > 0  ? '#FD8D3C' :
+		            d > -1  ? '#FEB24C' :
+		            d > min   ? '#FED976' :
+		                       '#FFEDA0';
+		 }
+
+	 var pn_geojson= L.geoJSON(subzones, {
+			style: function(feature) {
+
+					for (var key in pnAll){
+						if (feature.properties.SUBZONE_C==key){
+							var s = pnAll[key];
+							getColor(s,pnAll["max"],pnAll["min"]);
+						}
+					}
+
+				}
+
+				 })
 //map layer control
  var overlayMaps = {
  "Event Location": event_markers,
@@ -140,7 +166,7 @@
 
  };
  var baseMaps={
-	 
+
  }
 	L.control.layers(baseMaps, overlayMaps).addTo(map);
 	//legend

@@ -26,13 +26,13 @@ def show_viz():
 	# can obtain various tweets as well as the average sentiment values
 	for eachEvent in event:
 		eachEvent['sentiment'] = Sentiment.getSentiment(eachEvent['eventName'])
-	
-	# convert to json 
+
+	# convert to json
 	event = json.dumps(event)
 	aggregated = json.dumps(aggregated)
 	print aggregated
 
-	return render_template('index.html', s_data=event, aggregated=None)
+	return render_template('index.html', s_data=event, aggregated=aggregated)
 
 if __name__ == "__main__":
     app.run()
