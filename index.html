@@ -29,10 +29,14 @@
     <div class="container">
       <div class="header">
         <h2>Hangout</h2>
-        <div>
+
     <p>Is Singapore a truely boring city? We don't think so. Hangout is a real time web application that tells you where the happenings are at. Leveraging on Dataspark's API, we are able to tell you where the events are. And based on sentiment analysis from social media like Twitter, we can tell you if the event is worth it.</p>
     <small>Remember Artbox? Everyone was there but everyone was writing how small it is.</small>
     <br>
+    <h3>Instructions</h3>
+    <p>
+      Attend an event if both sentiment and population mean are neutral and above. Flags represent where events are currently at. Use our layers to change the look of the map!
+    </p>
     <div id="mapid"></div>
     </div>
 <!-- beginning of js leaflet script  -->
@@ -41,9 +45,7 @@
     <script src="./js/legend.js"></script>
     <script src="./js/event items.js"></script>
     <script>
-    //import leaflet-label from 'leaflet-label';
-    var map = new L.Map("mapid", {center: [1.3521, 103.8198], zoom: 11.5})
-    .addLayer(new L.TileLayer("http://maps-{s}.onemap.sg/v2/Original/{z}/{x}/{y}.png"));
+    console.log({{ event }});
     //access the subzone data from subzone.js
     var subzones = [subzone_information]
 
@@ -60,25 +62,52 @@
     });
 
     //generates the flags needed
-    // information about the event will be here also
+    var markers=[]
     function arrayFlag(coordinates){
-      for (i = 0; i < coordinates.length; i++) {
-        //var canvas = '<canvas id="myCanvas" width="300" height="150"></canvas><script>function t(p,i){var c = document.getElementById(i);var ctx = c.getContext("2d");ctx.beginPath();ctx.rect(20, 20, 150, 100);if(p>=80){ctx.fillStyle = "green";}else if (50<=p<80){ctx.fillStyle = "yellow";}else{ctx.fillStyle = "red";}ctx.fill();} t(51,"myCanvas"); </script>'
 
-          var marker = L.marker([testCoordiantes[i][1],testCoordiantes[i][2]], {icon: flagIcon}).bindPopup("hi")
-          marker.on('mouseover', function (e) {
-            this.openPopup();
-        });
-        marker.on('mouseout', function (e) {
-            this.closePopup();
-        });
-          marker.addTo(map);
+      for (i = 0; i < coordinates.length; i++) {
+        var sentiment=""
+        if (coordinates[i][5]>=80){
+          sentiment+="Good"
+        }
+        else if(60<=coordinates[i][5]<80){
+          sentiment+="Neutral"
+        }
+        else{
+          sentiment="Bad"
+        }
+        var suggestion="";var mean_pop="";
+        if (coordinates[i][4]>=1.0){
+          mean_pop+="huge"
+        }
+        else if(-1.0<=coordinates[4][5]<1.0){
+          mean_pop+="Neutral"
+        }
+        else{
+          mean_pop="decreased"
+        }
+
+        var myPopup = L.popup({
+          	maxHeight: 200,
+            maxWidth:400,
+            closeOnClick: false,
+            keepInView: true
+          }).setContent('<h1>'+coordinates[i][0]+'</h1><p><u>Event Details</u></p>'+coordinates[i][1]+'<p><u>Dates:</u><br>'+coordinates[i][2]+'</p>'+'<p>It seems that there is a  '+mean_pop+' change in population and a '+sentiment+' sentiment.</p>'
+        );
+
+          var marker = L.marker([testCoordiantes[i][6],testCoordiantes[i][7]], {icon: flagIcon}).bindPopup(myPopup)
+          markers.push(marker);
       }
     }
-    var testCoordiantes = [["Macrichite",1.3521, 103.8198],["Somewhere",1.2798070057318836,103.83961460585509]];
+    var testCoordiantes = [["Riverhongbao","Loreum ipsdfsdffsdkjfdsfsdfsdfsdfsdfsdfsdsndfsd nasdiauhoewtewat sdfkskfk","15-14feb","Macrichite",1.0,80,1.3521, 103.8198],["Riverhongbao","Loreum ipsdfsdffsdkjfsndfsd nasdiauhoewtewat","15-14feb","Somewhere",1.0,20,1.2798070057318836,103.83961460585509]];
     arrayFlag(testCoordiantes);
+    var event_markers = L.layerGroup(markers);
 
-    L.geoJSON(subzones, {
+
+    var map = new L.Map("mapid", {center: [1.3521, 103.8198], zoom: 11.5,layers:[event_markers]})
+
+    .addLayer(new L.TileLayer("http://maps-{s}.onemap.sg/v2/Original/{z}/{x}/{y}.png"));
+    var regional_geojson= L.geoJSON(subzones, {
       style: function(feature) {
         switch (feature.properties.REGION_C) {
             case 'CR': return {color: "#66c2a5"};
@@ -91,19 +120,28 @@
         onEachFeature: function (feature, layer) {
           layer.bindPopup('<h4>'+feature.properties.SUBZONE_N[0]+feature.properties.SUBZONE_N.substring(1,feature.properties.SUBZONE_N.length).toLowerCase()+'<h4>');
           }
-         }).addTo(map);
+         })
+//map layer control
+   var overlayMaps = {
+   "Event Location": event_markers,
 
+   };
+   var baseMaps={
+     "Original": map,
+     "Region": regional_geojson
+   }
+    L.control.layers(baseMaps, overlayMaps).addTo(map);
     //legend
 
     var legend = legend;
     legend.addTo(map);
 
     </script>
-    <footer id="footer">
-      <div class="container">
-        <span class="text-muteds">Built using Leaflet,GeoJson,OneMap Leaflet Maps. Data from data.gov.sg, DataSpark API, the web.</span>
-      </div>
-    </footer>
+
+    <div class="container">
+      <span class="text-muted">Built using Leaflet,GeoJson,OneMap Leaflet Maps. Data from data.gov.sg, DataSpark API, the web.</span>
+    </div>
+
 
   </body>
 </html>

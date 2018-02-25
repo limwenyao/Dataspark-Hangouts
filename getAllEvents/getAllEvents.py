@@ -9,7 +9,7 @@ import unidecode
 import json
 import googlemaps
 from datetime import datetime, date
-import csv 
+import csv
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 import numpy as np
@@ -47,7 +47,7 @@ def getAllEvents(startdate, enddate):
 
 	template_url = "https://thehoneycombers.com/singapore/top-10-things-to-do-this-weekend-in-singapore-%s/"%(dateString)
 	print template_url
-	try: 
+	try:
 		page = urllib2.urlopen(template_url)
 	except:
 		page = urllib2.urlopen("https://thehoneycombers.com/singapore/whats-on-weekends-events-singapore-honeycombers-%s/"%(dateString))
@@ -56,7 +56,7 @@ def getAllEvents(startdate, enddate):
 
 	listOfEvents = []
 	# children = p.findChildren()
-	for each in p:	
+	for each in p:
 		# to eliminate p tags with no bold title
 		no_b = True
 		for child in each.findChildren():
@@ -64,7 +64,11 @@ def getAllEvents(startdate, enddate):
 				no_b = False
 		if no_b:
 			continue
+<<<<<<< HEAD
 		# print each
+=======
+
+>>>>>>> a0fcadda152f5433a09755a6a0c29bd988a99ff7
 
 		newEvent = {}
 		newEvent['EventTitle'] = ''
@@ -75,7 +79,7 @@ def getAllEvents(startdate, enddate):
 			stripped = unidecode.unidecode(stripped)
 			if child.name=='b':
 				# print 'EVENT TITLE',child.text
-				
+
 				if newEvent['EventTitle'] == '':
 					newEvent['EventTitle'] = [stripped]
 				else:
@@ -144,14 +148,14 @@ def getAllEvents(startdate, enddate):
 
 	return newlist
 
-# find dimension of a list 
+# find dimension of a list
 def dim(a):
     if not type(a) == list:
         return []
     return [len(a)] + dim(a[0])
 
 def getSubZone(address):
-	
+
 	subzone = None
 	# from os import listdir
 	# from os.path import isfile, join
@@ -170,7 +174,7 @@ def getSubZone(address):
 	if geocode_result==[]:
 		return
 	latlng = geocode_result[0]['geometry']['location']
-	
+
 	# print latlng
 
 	data = json.load(open(subzoneFile))
@@ -196,7 +200,7 @@ def getSubZone(address):
 
 
 if __name__=="__main__":
-	
+
 	# print [date(1900, i, 1).strftime('%b')for i in range(1,13)]
 	#print datetime(2018, 2, 17)
 	#print dateConstructor(datetime(2018, 2, 17), datetime(2018, 2, 18))
@@ -212,4 +216,3 @@ if __name__=="__main__":
 	# 	print '\n'
 
 	# print getSubZone('359, Yishun Ring Road')
-
