@@ -43,7 +43,7 @@
 	<br>
 	<h3>Instructions</h3>
 	<p>
-		Attend an event if both sentiment and population mean are neutral and above. Flags represent where events are currently at. Use our layers to change the look of the map!
+		Attend an event if both sentiment and population mean change (avoid the blues) are neutral and above. Flags represent where events are currently at. Use the layer control to change the look of the map!
 	</p>
 	<div id="mapid"></div>
 	</div>
@@ -67,13 +67,12 @@
 	popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
 	});
 
-	//generates the flags needed
-	/*{"eventName": "Spring Surprise", "eventCoord": [1.2815683, 103.8636132], "eventInfo": "Meet the God of Fortune, join Chinese handicraft sessions, and keep an eye out this weekend for the ultraviolet light performances by UV Lotus Dragon and Northern Lions! And of course, no CNY festivity is complete without the majestic lion dance on poles, which you can catch at the Supertree Grove.", "sentiment": {"tweets": [["spring day music show performance which i connected to immensely more than the MV at the time, BME (by that time i' https://t.co/OE9PDbC1sD", "positive"], ["New post: \"https://t.co/wil3o2Goms | Drogba club spring CAF Champions League surprise\" https://t.co/tgEvC4oe0P", "neutral"], ["New post: \"https://t.co/wil3o2Goms | Chelsea capable of the 'incredible' to spring Barca surprise - Conte\" https://t.co/x1xE6sL2Oy", "neutral"], ["Gardens by the Bay  Spring Surprise 2018  Belly Dance https://t.co/W3gI3eprcJ via @YouTube", "neutral"], ["Gardens by the Bay  Spring Surprise 2018 : First time UV Northern Lions ... https://t.co/AqBYn73JTf via @YouTube", "neutral"]], "overall": 0.6}, "eventDate": "14-25 Feb"}*/
+
 	var markers=[]
 	function eventFlags(coordinates){
 		for (i=0;i< coordinates.length;i++){
 			var oneevent = coordinates[i]; //capture the event detail
-			console.log(oneevent);
+			//console.log(oneevent);
 			var event_name = oneevent["eventName"];
 			var eventCoord = oneevent["eventCoord"];
 			var event_Date = oneevent["eventDate"];
@@ -87,7 +86,7 @@
 				var tweet = '<p>' + sentiment_result["tweets"][j][0] +'</p>';
 				tweets+= tweet;
 			}
-			console.log(tweets);
+			//console.log(tweets);
 			var sentiment=""
 				if (sentiment_overall>=0.80){
 					sentiment+="positive"
@@ -99,13 +98,13 @@
 					sentiment="negative"
 				}
 				//console.log(sentiment);
-				var mean_pop ="ok";
+
 				var myPopup = L.popup({
 							maxHeight: 200,
 							maxWidth:400,
 							closeOnClick: false,
 							keepInView: true
-						}).setContent('<h1>'+event_name+'</h1><p><u>Event Details</u></p>'+eventInfo+'<p><u>Dates:</u><br>'+event_Date +'</p>'+'<p>It seems that there is a  '+mean_pop+' change in population and a '+sentiment+' sentiment.</p>' +'<p><u>Some tweets of '+event_name+'</u></p>'+tweets
+						}).setContent('<h1>'+event_name+'</h1><p><u>Event Details</u></p>'+eventInfo+'<p><u>Dates:</u><br>'+event_Date +'</p>'+'<p>It seems that there is a '+sentiment+' sentiment for this event.</p>' +'<p><u>Some tweets of '+event_name+'</u></p>'+tweets
 					);
 
 						var marker = L.marker([eventCoord[0],eventCoord[1]], {icon: flagIcon}).bindPopup(myPopup)
@@ -138,11 +137,11 @@
 			 })
 
 			 function getColor(d) {
-		     return d > 2 ? '#d7191c' :
+		     return d > pnAll["max"]  ? '#d7191c' :
 		            d > 1  ? '#fdae61' :
 		            d > 0  ? '#ffffbf' :
 		            d > -1  ? '#abd9e9' :
-		            d > -2  ? '#2c7bb6' :
+		            d > pnAll["min"]  ? '#2c7bb6' :
 								'#FFEDA0';
 		 }
 
