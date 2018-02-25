@@ -50,14 +50,15 @@
 <!-- beginning of js leaflet script  -->
 
 	<script>
-	//console.log('{{event|tojson|safe}}');
+	console.log('{{ s_data|tojson|safe }}');
 	//access the subzone data from subzone.js
 	var subzones = [subzone_information]
-
+	var data_xyz = {{ s_data|tojson }};
+	var getAllevents = JSON.parse(data_xyz);
 	//variable for flag icon
 	var flagIcon = L.icon({
-	iconUrl: './assets/flag.png',
-	shadowUrl: './assets/flag shadow.png',
+	iconUrl: '{{ url_for('static', filename='flag.png') }}',
+	shadowUrl: '{{ url_for('static', filename='flag shadow.png') }}',
 
 	iconSize:     [40, 60], // size of the icon
 	shadowSize:   [50, 64], // size of the shadow
@@ -67,52 +68,57 @@
 	});
 
 	//generates the flags needed
+	/*{"eventName": "Spring Surprise", "eventCoord": [1.2815683, 103.8636132], "eventInfo": "Meet the God of Fortune, join Chinese handicraft sessions, and keep an eye out this weekend for the ultraviolet light performances by UV Lotus Dragon and Northern Lions! And of course, no CNY festivity is complete without the majestic lion dance on poles, which you can catch at the Supertree Grove.", "sentiment": {"tweets": [["spring day music show performance which i connected to immensely more than the MV at the time, BME (by that time i' https://t.co/OE9PDbC1sD", "positive"], ["New post: \"https://t.co/wil3o2Goms | Drogba club spring CAF Champions League surprise\" https://t.co/tgEvC4oe0P", "neutral"], ["New post: \"https://t.co/wil3o2Goms | Chelsea capable of the 'incredible' to spring Barca surprise - Conte\" https://t.co/x1xE6sL2Oy", "neutral"], ["Gardens by the Bay  Spring Surprise 2018  Belly Dance https://t.co/W3gI3eprcJ via @YouTube", "neutral"], ["Gardens by the Bay  Spring Surprise 2018 : First time UV Northern Lions ... https://t.co/AqBYn73JTf via @YouTube", "neutral"]], "overall": 0.6}, "eventDate": "14-25 Feb"}*/
 	var markers=[]
-	function arrayFlag(coordinates){
-		for (i in coordinates){
-			var oneevent = i; //capture the event detail
-			var event_name = oneevent.eventName;
-			var eventCoord = oneevent.eventCoord;
-			var event_Date = oneevent.eventDate;
-			var eventInfo = oneevent.eventInfo;
-			var sentiment_result = oneevent.sentiment[1];
+	function eventFlags(coordinates){
+		for (i=0;i< coordinates.length;i++){
+			var oneevent = coordinates[i]; //capture the event detail
+			console.log(oneevent);
+			var event_name = oneevent["eventName"];
+			var eventCoord = oneevent["eventCoord"];
+			var event_Date = oneevent["eventDate"];
+			var eventInfo = oneevent["eventInfo"];
+			var sentiment_result = oneevent["sentiment"]; //capture sentiment information
+			//console.log(event_name);
+			var sentiment_overall=sentiment_result["overall"];
+			var tweets="";
+			for (j=0;j< sentiment_result["tweets"].length;j++){
+				//console.log(sentiment_result["tweets"][j][0] )
+				var tweet = '<p>' + sentiment_result["tweets"][j][0] +'</p>';
+				tweets+= tweet;
+			}
+			console.log(tweets);
 			var sentiment=""
-				if (sentiment_result>=80){
-					sentiment+="Good"
+				if (sentiment_overall>=0.80){
+					sentiment+="positive"
 				}
-				else if(60<=sentiment_result<80){
-					sentiment+="Neutral"
+				else if(0.60<=sentiment_overall<0.80){
+					sentiment+="neutral"
 				}
 				else{
-					sentiment="Bad"
+					sentiment="negative"
 				}
+				//console.log(sentiment);
 				var mean_pop ="ok";
-
-				//Capture the tweets
-				var tweets= "";
-				for (i in oneevent.sentiment[0]){
-					tweets += i+"<br>";
-				}
-
 				var myPopup = L.popup({
 							maxHeight: 200,
 							maxWidth:400,
 							closeOnClick: false,
 							keepInView: true
-						}).setContent('<h1>'+event_name+'</h1><p><u>Event Details</u></p>'+eventInfo+'<p><u>Dates:</u><br>'+event_Date +'</p>'+'<p>It seems that there is a  '+mean_pop+' change in population and a '+sentiment+' sentiment.</p><br>' + tweets
+						}).setContent('<h1>'+event_name+'</h1><p><u>Event Details</u></p>'+eventInfo+'<p><u>Dates:</u><br>'+event_Date +'</p>'+'<p>It seems that there is a  '+mean_pop+' change in population and a '+sentiment+' sentiment.</p>' +'<p><u>Some tweets of '+event_name+'</u></p>'+tweets
 					);
 
 						var marker = L.marker([eventCoord[0],eventCoord[1]], {icon: flagIcon}).bindPopup(myPopup)
 						markers.push(marker);
 		}
 	}
-
+	//call and get the flag pins
+	eventFlags(getAllevents);
 	var event_markers = L.layerGroup(markers);
 
 
-	var map = new L.Map("mapid", {center: [1.3521, 103.8198], zoom: 11.5,layers:[event_markers]})
+	var map = new L.Map("mapid", {center: [1.3521, 103.8198], zoom: 11.5,layers:[event_markers]}).addLayer(new L.TileLayer("http://maps-{s}.onemap.sg/v2/Original/{z}/{x}/{y}.png"));
 
-	.addLayer(new L.TileLayer("http://maps-{s}.onemap.sg/v2/Original/{z}/{x}/{y}.png"));
 	var regional_geojson= L.geoJSON(subzones, {
 		style: function(feature) {
 			switch (feature.properties.REGION_C) {
@@ -130,11 +136,11 @@
 //map layer control
  var overlayMaps = {
  "Event Location": event_markers,
+ "Region": regional_geojson
 
  };
  var baseMaps={
-	 "Original": map,
-	 "Region": regional_geojson
+	 
  }
 	L.control.layers(baseMaps, overlayMaps).addTo(map);
 	//legend
@@ -145,7 +151,7 @@
 	</script>
 
 	<div class="container">
-		<span class="text-muted">Built using Leaflet,GeoJson,OneMap Leaflet Maps. Data from data.gov.sg, DataSpark API, the web.</span>
+		<span class="text-muted">Built using Leaflet,GeoJson,OneMap, Flask. Data from data.gov.sg, DataSpark API, Twitter API,the web.</span>
 	</div>
 
 </body>

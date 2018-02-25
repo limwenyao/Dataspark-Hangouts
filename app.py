@@ -34,7 +34,7 @@ def show_viz():
 	print event
 
 
-	return render_template('index.html', event=event, aggregated=None)
+	return render_template('index.html', s_data=event, aggregated=None)
 
 if __name__ == "__main__":
     app.run()
