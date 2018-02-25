@@ -13,6 +13,8 @@ import csv
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 import numpy as np
+import os
+import csv
 
 #url = "https://www.timeout.com/singapore/things-to-do/things-to-do-in-singapore-this-weekend"
 #url = "https://thehoneycombers.com/singapore/events-in-singapore/"
@@ -24,7 +26,23 @@ def dateConstructor(startdate, enddate):
 
 # returns a list of events found from website
 def getAllEvents(startdate, enddate):
+	filepath = os.path.dirname(os.path.realpath(__file__))
+	oldFilename = "eventdata_"+startdate.strftime('%d').lstrip('0')+'_'+enddate.strftime('%d').lstrip('0')+'_'+startdate.strftime('%B').lower()+'.json'
+	# print filepath
+	filename = os.path.join(filepath,oldFilename)
+	# print filename
+	filelist = os.listdir(filepath)
 
+	# print 'oldFilename',oldFilename
+  	# print 'filelist',filelist
+	if oldFilename in filelist:
+		print "File exists"
+		data = json.load(open(filename))
+		# print data
+		return data
+		# with open(filename, 'r') as f:
+		# 	reader = csv.reader(f)
+		# 	return [row for row in reader]
 	dateString = dateConstructor(startdate, enddate)
 
 	template_url = "https://thehoneycombers.com/singapore/top-10-things-to-do-this-weekend-in-singapore-%s/"%(dateString)
@@ -34,7 +52,6 @@ def getAllEvents(startdate, enddate):
 	except:
 		page = urllib2.urlopen("https://thehoneycombers.com/singapore/whats-on-weekends-events-singapore-honeycombers-%s/"%(dateString))
 	soup = BeautifulSoup(page, 'html.parser')
-
 	p = soup.find_all('p')
 
 	listOfEvents = []
@@ -47,7 +64,7 @@ def getAllEvents(startdate, enddate):
 				no_b = False
 		if no_b:
 			continue
-		
+		# print each
 
 		newEvent = {}
 		newEvent['EventTitle'] = ''
@@ -90,6 +107,7 @@ def getAllEvents(startdate, enddate):
 		listOfEvents.append(newEvent)
 
 	for event in listOfEvents:
+		# print event
 		if event['EventDetails']!='':
 			newDetails = {}
 			tempList = event['EventDetails'].split(',')
@@ -120,6 +138,10 @@ def getAllEvents(startdate, enddate):
 			formattedData['eventDate'] = eachEvent['EventDetails']['Date']
 			formattedData['eventCoord'] = getSubZone(eachEvent['EventDetails']['Address'])[1]
 			newlist.append(formattedData)
+	# print newlist
+	with open(filename, 'w') as f:
+		json.dump(newlist, f)
+
 	return newlist
 
 # find dimension of a list 
@@ -136,6 +158,7 @@ def getSubZone(address):
 	# onlyfiles = [f for f in listdir('.') if isfile(join('.', f))]
 	# print onlyfiles
 
+	# subzoneFile = 'subzone.json'
 	subzoneFile = 'getAllEvents/subzone.json'
 	#retrieve the longtitude and latitude
 	key = 'AIzaSyC34ueWVc6iIeObP2BedZhfNo5Z1k8cdmo'

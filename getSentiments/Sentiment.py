@@ -2,11 +2,27 @@ import sys
 import csv
 import tweepy
 import matplotlib.pyplot as plt
+import os
+import json
 
 from collections import Counter
 from aylienapiclient import textapi
 
 def getSentiment(subject):
+
+  filepath = os.path.dirname(os.path.realpath(__file__))
+  # print filepath
+  oldFilename = "eventdata_"+subject+'.json'
+  filename = os.path.join(filepath,oldFilename)
+  # print filename
+  filelist = os.listdir(filepath)
+  # print 'oldFilename',oldFilename
+  # print 'filelist',filelist
+  if oldFilename in filelist:
+    print "File exists"
+    data = json.load(open(filename))
+    # print data
+    return data
 
   # if sys.version_info[0] < 3:
   #    input = raw_input
@@ -33,7 +49,7 @@ def getSentiment(subject):
   # query = input("What subject do you want to analyze for this example? \n")
   # number = input("How many Tweets do you want to analyze? \n")
   query = subject
-  number = 3
+  number = 5
 
   results = api.search(
      lang="en",
@@ -79,7 +95,12 @@ def getSentiment(subject):
       sum+=0.5
     else:
       sum+=0
-  return listOfTweets,sum/float(number)
+  
+  jsondata = {'tweets':listOfTweets, 'overall':sum/float(number)}
+  with open(filename, 'w') as f:
+    json.dump(jsondata, f)
+  # return listOfTweets,sum/float(number)
+  return jsondata
 
 if __name__=="__main__":
   print getSentiment('River Hongbao 2018')
