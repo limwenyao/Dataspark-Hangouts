@@ -64,11 +64,6 @@ def getAllEvents(startdate, enddate):
 				no_b = False
 		if no_b:
 			continue
-<<<<<<< HEAD
-		# print each
-=======
-
->>>>>>> a0fcadda152f5433a09755a6a0c29bd988a99ff7
 
 		newEvent = {}
 		newEvent['EventTitle'] = ''
