@@ -137,24 +137,26 @@
 				}
 			 })
 
-			 function getColor(d,max,min) {
-		     return d > max ? '#E31A1C' :
-		            d > 1  ? '#FC4E2A' :
-		            d > 0  ? '#FD8D3C' :
-		            d > -1  ? '#FEB24C' :
-		            d > min   ? '#FED976' :
-		                       '#FFEDA0';
+			 function getColor(d) {
+		     return d > 10 ? '#d7191c' :
+		            d > 1  ? '#fdae61' :
+		            d > 0  ? '#ffffbf' :
+		            d > -1  ? '#abd9e9' :
+		            d > -10   ? '#2c7bb6' :
+								'#FFEDA0';
 		 }
 
 	 var pn_geojson= L.geoJSON(subzones, {
 			style: function(feature) {
+				return {
+				        fillColor: getColor(pnAll[feature.properties.SUBZONE_C]),
+				        weight: 2,
+				        opacity: 1,
+				        color: 'white',
+				        dashArray: '3',
+				        fillOpacity: 0.7
+				    };
 
-					for (var key in pnAll){
-						if (feature.properties.SUBZONE_C==key){
-							var s = pnAll[key];
-							getColor(s,pnAll["max"],pnAll["min"]);
-						}
-					}
 
 				}
 
@@ -162,7 +164,8 @@
 //map layer control
  var overlayMaps = {
  "Event Location": event_markers,
- "Region": regional_geojson
+ "Region": regional_geojson,
+ "PN": pn_geojson
 
  };
  var baseMaps={
